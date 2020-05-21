@@ -1,23 +1,48 @@
 import json
 import os
 
-from sqlalchemy import Column, String, create_engine
+from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 
+from app_config import app
 
-database_path = os.environ['DATABASE_URL']
-
-db = SQLAlchemy()
+db = SQLAlchemy(app)
 
 '''
-setup_db(app)
-    binds a flask application and a SQLAlchemy service
+User - generic User base class (can be further modelled into Mentor or Coder)
 '''
-def setup_db(app, database_path=database_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.app = app
-    db.init_app(app)
-    db.create_all()
+class User(db.Model):
+    __abstract__ = True
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(24), unique=True)
+
+'''
+Mentor - User who reviews code of Coders
+         Each Mentor can have many Coders
+'''
+class Mentor(User):
+    __tablename__ = 'mentors'
+    coders = db.relationship('Coder', backref='mentor', lazy=True)
 
 
+'''
+Coder - User who writes and stores functions & classes
+        Each coder has one Mentor
+        Each coder can have many Snippets
+'''
+class Coder(User):
+    __tablename__ = 'coders'
+    snippets = db.relationship('Snippet', backref='coder', lazy=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey('mentors.id'))
+
+
+'''
+Snippet - Code function or class written and stored by Coder and Reviewed by Mentor
+'''
+class Snippet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    snippet_name = db.Column(db.String(24))
+    coder_id = db.Column(db.Integer, db.ForeignKey('coders.id'))
+
+
+db.create_all()
