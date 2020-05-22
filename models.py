@@ -73,6 +73,16 @@ class Mentor(User):
     __tablename__ = 'mentors'
     coders = db.relationship('Coder', backref='mentor', lazy=True)
 
+    '''
+    to_dict(): Method for returning dictionarified version of a Mentor
+    '''
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "coders": self.coders
+        }
+
 
 '''
 Coder - User who writes and stores functions & classes
@@ -83,6 +93,17 @@ class Coder(User):
     __tablename__ = 'coders'
     snippets = db.relationship('Snippet', backref='coder', lazy=True)
     mentor_id = db.Column(db.Integer, db.ForeignKey('mentors.id'))
+
+    '''
+    to_dict(): Method for returning dictionarified version of a Coder
+    '''
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "snippets": self.snippets,
+            "mentor_id": self.mentor_id
+        }
 
 
 '''

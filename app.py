@@ -13,6 +13,7 @@ def index():
     "message": "welcome to funcster."
     })
 
+
 # route for new user signup. requires a username, email address and a status of mentor/coder
 @app.route('/signup', methods=['POST'])
 def signup_user():
@@ -54,6 +55,31 @@ def signup_user():
         "user_id": user.id
     })
 
+# return all current coders
+@app.route('/coders', methods=['GET'])
+def get_coders():
+    
+    try:
+        coders = [coder.to_dict() for coder in Coder.query.all()]
+        return jsonify ({
+            "success": True,
+            "coders": coders
+        })
+    except:
+        abort(500)
+
+# return all current mentors
+@app.route('/mentors', methods=['GET'])
+def get_mentors():
+    
+    try:
+        mentors = [mentor.to_dict() for mentor in Mentor.query.all()]
+        return jsonify ({
+            "success": True,
+            "mentors": mentors
+        })
+    except:
+        abort(500)
 
 @app.route('/code', methods=['POST'])
 def add_new_snippet():
@@ -65,7 +91,7 @@ def add_new_snippet():
 # route to quell 404 errors from favicon requests when serving api separately
 @app.route('/favicon.ico')
 def favicon():
-    return send_static_file('favicon.ico')
+    return app.send_static_file('favicon.ico')
 
 #----------------------------------------------------------------------------#
 # Launch.
