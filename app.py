@@ -4,6 +4,7 @@ from flask import Flask, abort, jsonify, request
 
 from app_config import app
 from models import db, Mentor, Coder, Snippet, User
+from auth import AuthError, requires_auth
 
 
 @app.route('/')
