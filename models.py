@@ -104,6 +104,13 @@ class Coder(User):
             "snippets": self.snippets,
             "mentor_id": self.mentor_id
         }
+    
+    '''
+    need_mentors(): Class Method for returning all coders who don't have a Mentor
+    '''
+    @classmethod
+    def need_mentors(cls):
+        return cls.query.filter_by(mentor_id is None).all()
 
 
 '''
@@ -113,7 +120,8 @@ class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     snippet_name = db.Column(db.String(24))
     code = db.Column(db.String())
-    code_type = db.Column(db.String())
+    needs_review = db.Column(db.Boolean, default=False)
+    comments = db.Column(db.String())
     coder_id = db.Column(db.Integer, db.ForeignKey('coders.id'))
 
     '''
