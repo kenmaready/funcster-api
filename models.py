@@ -101,7 +101,7 @@ class Coder(User):
         return {
             "id": self.id,
             "username": self.username,
-            "snippets": self.snippets,
+            "snippets": [snippet.to_dict() for snippet in self.snippets],
             "mentor_id": self.mentor_id
         }
     
@@ -118,7 +118,7 @@ Snippet - Code function or class written and stored by Coder and Reviewed by Men
 '''
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    snippet_name = db.Column(db.String(24))
+    snippet_name = db.Column(db.String(100))
     code = db.Column(db.String())
     needs_review = db.Column(db.Boolean, default=False)
     comments = db.Column(db.String())
@@ -160,6 +160,20 @@ class Snippet(db.Model):
     '''
     def update(self):
         db.session.commit()
+
+    ''' to_dict() 
+        returns dictionarified version of a snippet
+    '''
+        
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "snippet_name": self.snippet_name,
+            "code": self.code,
+            "needs_review": self.needs_review,
+            "comments": self.comments,
+            "coder_id": self.coder_id
+        }
 
 
 

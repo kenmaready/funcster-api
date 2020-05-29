@@ -39,6 +39,7 @@ get_token_auth_header() method
 def get_token_auth_header():
     auth = request.headers.get('Authorization', None)
     if not auth:
+        print('No authorization header provided...')
         raise AuthError({
             'code': 'authorization_header_missing',
             'description': 'Authorization header is expected.'
@@ -171,9 +172,13 @@ def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            print("getting token...")
             token = get_token_auth_header()
+            print("token obtained, verifying token...")
             payload = verify_decode_jwt(token)
+            print("token verified, checking permissions...")
             check_permissions(permission, payload)
+            print("returning to route")
             return f(payload, *args, **kwargs)
 
         return wrapper
