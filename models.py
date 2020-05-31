@@ -63,6 +63,14 @@ class User(db.Model):
     @classmethod
     def exists(cls, username):
         return cls.query.filter_by(username=username).scalar() is not None
+    
+    '''
+    get_by_name(username)
+        searches for a user by user name and returns the user if found
+    '''
+    @classmethod
+    def get_by_name(cls, username):
+        return cls.query.filter_by(username=username).first()
 
 
 '''
@@ -118,7 +126,7 @@ Snippet - Code function or class written and stored by Coder and Reviewed by Men
 '''
 class Snippet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    snippet_name = db.Column(db.String(100))
+    snippet_name = db.Column(db.String(200))
     code = db.Column(db.String())
     needs_review = db.Column(db.Boolean, default=False)
     comments = db.Column(db.String())

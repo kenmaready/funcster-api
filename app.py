@@ -33,7 +33,9 @@ def handle_auth_error(ex):
 def get_token_auth_header():
     """Obtains the access token from the Authorization Header
     """
+    print(request.headers)
     auth = request.headers.get("Authorization", None)
+    print('auth: ', auth)
     if not auth:
         raise AuthError({"code": "authorization_header_missing",
                         "description":
@@ -59,7 +61,6 @@ def get_token_auth_header():
     return token
 
 
-
 def requires_scope(required_scope):
     """Determines if the required scope is present in the access token
     Args:
@@ -67,7 +68,7 @@ def requires_scope(required_scope):
     """
     token = get_token_auth_header()
     unverified_claims = jwt.get_unverified_claims(token)
-    print(unverified_claims)
+
     if unverified_claims.get("permissions"):
         token_scopes = unverified_claims.get("permissions")
         for token_scope in token_scopes:
@@ -82,6 +83,7 @@ def requires_auth(f):
     """
     @wraps(f)
     def decorated(*args, **kwargs):
+        print('requires_auth() called...')
         token = get_token_auth_header()
         print("get_token_auth_header() returned token: ", token)
         jsonurl = urlopen("https://"+AUTH0_DOMAIN+"/.well-known/jwks.json")
@@ -136,9 +138,6 @@ def requires_auth(f):
         raise AuthError({"code": "invalid_header",
                         "description": "Unable to find appropriate key"}, 401)
     return decorated
-
-
-
 
 
 @app.route('/')
@@ -219,35 +218,6 @@ def signup_user():
         "user_id": user.id
     })
 
-# route to post new snippet to database
-@app.route('/coders/<int:coder_id>/snippets', methods=['POST'])
-def post_snippet(coder_id):
-    body = request.get_json()
-    coder = Coder.query.get(coder_id)
-
-    attrs = {}
-    attrs['snippet_name'] = body.get('snippetName', None)
-    attrs['code'] = body.get('code', None)
-    attrs['needs_review'] = body.get('needsReview', False)
-
-    if attrs['snippet_name'] and attrs['code']:
-        try:
-            snippet = Snippet(**attrs)
-
-            # insert snippet by appending as a child to its coder and 
-            # updating coder
-            coder.snippets.append(snippet)
-            coder.update()
-            return jsonify({
-                "success": True,
-                "message": "Snippet has been successfully saved to database"
-            })
-        except:
-            abort(500)
-    
-    else:
-        abort(400)
-
 # return all current coders
 @app.route('/coders', methods=['GET'])
 @requires_auth
@@ -286,6 +256,123 @@ def get_mentors():
     
     else:
         abort(403)
+
+# method used to get information for a user after they're looged in
+# used by the front end's handleAuthentication() process to provide
+# customization depending on usertype
+@app.route('/userinfo/<username>')
+@requires_auth
+def get_user_info(username):
+    
+    check_coders = Coder.get_by_name(username)
+    if check_coders:
+        if check_coders.mentor:
+            mentor = check_coders.mentor.username
+        else:
+            mentor = None
+        
+        if check_coders.snippets:
+            snippets = [snippet.to_dict() for snippet in check_coders.snippets]
+        else:
+            snippets = []
+        print(snippets)
+
+        return jsonify({
+            "success": True,
+            "user_id": check_coders.id,
+            "usertype": "Coder",
+            "mentor": mentor,
+            "snippets": snippets
+        })
+    
+    check_mentors = Mentor.get_by_name(username)
+    if check_mentors:
+        return jsonify({
+            "success": True,
+            "user_id": check_mentors.id,
+            "usertype": "Mentor"
+        })
+        
+    abort(404)
+
+# endpoint to obtain information about a specific snippet:
+@app.route('/snippet/<snippet_id>')
+@requires_auth
+def get_snippet(snippet_id):
+    snippet = Snippet.query.get(snippet_id)
+    if not snippet:
+        abort(404)
+    
+    snippet = snippet.to_dict()
+    snippet['success'] = True
+    
+    return jsonify(snippet)
+
+# route to post new snippet to database
+@app.route('/snippet/new', methods=['POST'])
+@requires_auth
+def post_new_snippet():
+    print('post_new_snippet() called...')
+    body = request.get_json()
+
+    coderId = body.get('coderId', None)
+    coder = Coder.query.get(coderId)
+    if not coder:
+        abort(404)
+    
+    attrs = {}
+    attrs['snippet_name'] = body.get('name', None)
+    attrs['code'] = body.get('code', None)
+    attrs['needs_review'] = body.get('needsReview', False)
+    attrs['comments'] = body.get('comments', '')
+
+    if attrs['snippet_name'] and attrs['code']:
+        try:
+            snippet = Snippet(**attrs)
+            print(snippet.to_dict())
+            # insert snippet by appending as a child to its coder and 
+            # updating coder
+            print(coder.to_dict())
+            coder.snippets.append(snippet)
+            coder.update()
+            return jsonify({
+                "success": True,
+                "message": "Snippet has been successfully saved to database"
+            })
+        except:
+            abort(500)
+    
+    else:
+        abort(400)
+
+@app.route('/snippet/<snippet_id>', methods=['POST'])
+@requires_auth
+def post_revised_snippet(snippet_id):
+    print('post_revised_snippet() called...')
+    body = request.get_json()
+    print(body)
+
+    snippet = Snippet.query.get(snippet_id)
+    if not snippet:
+        abort(404)
+    
+    if not body.get('name') or  not body.get('code'):
+        abort(400)
+
+    try:
+        snippet.snippet_name = body.get('name')
+        snippet.code = body.get('code')
+        snippet.needs_review = body.get('needsReview', False)
+        snippet.comments = body.get('comments', '')
+
+        snippet.update()
+        return jsonify({
+            "success": True,
+            "message": "Snippet has been successfully updated in database"
+        })
+    except:
+        abort(500)
+
 
 # route to quell 404 errors from favicon requests when serving api separately
 @app.route('/favicon.ico')
