@@ -88,7 +88,7 @@ class Mentor(User):
         return {
             "id": self.id,
             "username": self.username,
-            "coders": self.coders
+            "coders": [coder.to_dict() for coder in self.coders]
         }
 
 
@@ -117,8 +117,8 @@ class Coder(User):
     need_mentors(): Class Method for returning all coders who don't have a Mentor
     '''
     @classmethod
-    def need_mentors(cls):
-        return cls.query.filter_by(mentor_id is None).all()
+    def need_mentor(cls):
+        return cls.query.filter_by(mentor_id=None)
 
 
 '''
@@ -183,6 +183,3 @@ class Snippet(db.Model):
             "coder_id": self.coder_id
         }
 
-
-
-db.create_all()
