@@ -1,0 +1,300 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2
+-- Dumped by pg_dump version 12.2
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: udacity
+--
+
+CREATE TABLE public.alembic_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+ALTER TABLE public.alembic_version OWNER TO udacity;
+
+--
+-- Name: coders; Type: TABLE; Schema: public; Owner: udacity
+--
+
+CREATE TABLE public.coders (
+    id integer NOT NULL,
+    username character varying(24),
+    mentor_id integer
+);
+
+
+ALTER TABLE public.coders OWNER TO udacity;
+
+--
+-- Name: coders_id_seq; Type: SEQUENCE; Schema: public; Owner: udacity
+--
+
+CREATE SEQUENCE public.coders_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.coders_id_seq OWNER TO udacity;
+
+--
+-- Name: coders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: udacity
+--
+
+ALTER SEQUENCE public.coders_id_seq OWNED BY public.coders.id;
+
+
+--
+-- Name: mentors; Type: TABLE; Schema: public; Owner: udacity
+--
+
+CREATE TABLE public.mentors (
+    id integer NOT NULL,
+    username character varying(24)
+);
+
+
+ALTER TABLE public.mentors OWNER TO udacity;
+
+--
+-- Name: mentors_id_seq; Type: SEQUENCE; Schema: public; Owner: udacity
+--
+
+CREATE SEQUENCE public.mentors_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.mentors_id_seq OWNER TO udacity;
+
+--
+-- Name: mentors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: udacity
+--
+
+ALTER SEQUENCE public.mentors_id_seq OWNED BY public.mentors.id;
+
+
+--
+-- Name: snippet; Type: TABLE; Schema: public; Owner: udacity
+--
+
+CREATE TABLE public.snippet (
+    id integer NOT NULL,
+    snippet_name character varying(24),
+    coder_id integer,
+    code character varying,
+    comments character varying,
+    needs_review boolean
+);
+
+
+ALTER TABLE public.snippet OWNER TO udacity;
+
+--
+-- Name: snippet_id_seq; Type: SEQUENCE; Schema: public; Owner: udacity
+--
+
+CREATE SEQUENCE public.snippet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.snippet_id_seq OWNER TO udacity;
+
+--
+-- Name: snippet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: udacity
+--
+
+ALTER SEQUENCE public.snippet_id_seq OWNED BY public.snippet.id;
+
+
+--
+-- Name: coders id; Type: DEFAULT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.coders ALTER COLUMN id SET DEFAULT nextval('public.coders_id_seq'::regclass);
+
+
+--
+-- Name: mentors id; Type: DEFAULT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.mentors ALTER COLUMN id SET DEFAULT nextval('public.mentors_id_seq'::regclass);
+
+
+--
+-- Name: snippet id; Type: DEFAULT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.snippet ALTER COLUMN id SET DEFAULT nextval('public.snippet_id_seq'::regclass);
+
+
+--
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: udacity
+--
+
+COPY public.alembic_version (version_num) FROM stdin;
+\.
+
+
+--
+-- Data for Name: coders; Type: TABLE DATA; Schema: public; Owner: udacity
+--
+
+COPY public.coders (id, username, mentor_id) FROM stdin;
+3	coder3	1
+2	coder2	1
+1	coder1	3
+\.
+
+
+--
+-- Data for Name: mentors; Type: TABLE DATA; Schema: public; Owner: udacity
+--
+
+COPY public.mentors (id, username) FROM stdin;
+1	mentor1
+3	mentor2
+6	mentor3
+\.
+
+
+--
+-- Data for Name: snippet; Type: TABLE DATA; Schema: public; Owner: udacity
+--
+
+COPY public.snippet (id, snippet_name, coder_id, code, comments, needs_review) FROM stdin;
+7	sdlqwflkm	1	def my_multiplication(a, b):\n  ''' returns the product of the two inputs'''\n  return (a * b)	\N	t
+8	mult func	1	def mult_func(a, b):\n  ''' another multiplcation function'''\n  return (a * b)	make this recursive	t
+9	Add a bird	1	def add_a_bird(s):\n  return s + " bird"	\N	t
+10	My Division Function	1	def my_division(a, b):\n    ''' you know what it does'''\n    return a/b	\N	t
+13	Print my name	2	def print_name(name='bob'):\n  print(name)		t
+14	My New Subtract	1	def my_subtract(a, b):\n  return (a - b)		t
+4	String capitalizer	1	def my_string_capitalizer(s):\n  ''' returns screamy, uppercase version of input string'''\n  return s.upper()	\N	t
+6	String Inverter	1	def string_inverter(s):\n  ''' returns reversed version of input string'''\n  new_s = ''\n  for i in range(len(s)-1, 0, -1):\n    new_s += s[i]\n  \n  return new_s	\N	t
+12	My Better Division	2	def my_division(a, b):\n  ''' better than coder 1's (we'll see about that) '''\n  return (a/b)		f
+11	adasd	2	asdwfwefwesdcf	Not bad for a first effort, although it is complete nonsense.	t
+5	qpo2t2!	1	sdfkopfp23ds ADDED	\N	t
+17	Adding	1	def my_addition_fn(a, b):\n  return (a + b)	Looks fine.	f
+\.
+
+
+--
+-- Name: coders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: udacity
+--
+
+SELECT pg_catalog.setval('public.coders_id_seq', 18, true);
+
+
+--
+-- Name: mentors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: udacity
+--
+
+SELECT pg_catalog.setval('public.mentors_id_seq', 12, true);
+
+
+--
+-- Name: snippet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: udacity
+--
+
+SELECT pg_catalog.setval('public.snippet_id_seq', 17, true);
+
+
+--
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.alembic_version
+    ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
+
+
+--
+-- Name: coders coders_pkey; Type: CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.coders
+    ADD CONSTRAINT coders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: coders coders_username_key; Type: CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.coders
+    ADD CONSTRAINT coders_username_key UNIQUE (username);
+
+
+--
+-- Name: mentors mentors_pkey; Type: CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.mentors
+    ADD CONSTRAINT mentors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mentors mentors_username_key; Type: CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.mentors
+    ADD CONSTRAINT mentors_username_key UNIQUE (username);
+
+
+--
+-- Name: snippet snippet_pkey; Type: CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.snippet
+    ADD CONSTRAINT snippet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: coders coders_mentor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.coders
+    ADD CONSTRAINT coders_mentor_id_fkey FOREIGN KEY (mentor_id) REFERENCES public.mentors(id);
+
+
+--
+-- Name: snippet snippet_coder_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: udacity
+--
+
+ALTER TABLE ONLY public.snippet
+    ADD CONSTRAINT snippet_coder_id_fkey FOREIGN KEY (coder_id) REFERENCES public.coders(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

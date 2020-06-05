@@ -4,9 +4,13 @@ import os
 from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 
-from app_config import app
-
-db = SQLAlchemy(app)
+db = SQLAlchemy()
+def setup_db(app, database_path=os.environ.get('DATABASE_URL')):
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_path
+    db.app = app
+    db.init_app(app)
+    db.create_all()
 
 '''
 User - generic User base class (can be further modelled into Mentor or Coder)
