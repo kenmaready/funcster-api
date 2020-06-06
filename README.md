@@ -69,44 +69,58 @@ Funcster-api is built using:
 The endpoints in the API are:
 
 '/' (GET)
+
 _just returns a success message to let you know you are communicating with the
 funcster-api._
 
 '/signup' (POST)
-_runs through the signup process to register a new user with auth0 and with the
+
+\_runs through the signup process to register a new user with auth0 and with the
 postgresql database. Expects data in the body of the request with the following
 information:
+
 'usertype' {either 'coder' or 'mentor'}
+
 'username'
+
 'password'
+
 'email'
+
 will check to see if there is already a conflicting username (in which case it will
 return a 409 error), and then attempt to register the user with auth0 and if that
 succeeds, will register the user in the api's postgresql database as either a mentor
 or a coder, as applicable. If successful, returns a JSON object with "success": True
-and a "message" indicating that the signup was successful._
+and a "message" indicating that the signup was successful.\_
 
 '/userinfo/<username>' (GET)
 
--   returns profile information for a user based upon the username passed in the querystring.
-    Does not expect any information in the body of the request, but does require an Authorization
-    header with a Bearer token (which is a valid jwt Auth0 access token) having the appropriate
-    permission (either a Coder or Mentor access token will carry the needed permission). Searches
-    the Mentor & Coder database tables to see if the username exists and if not will return a 404
-    error. If successful, returns a JSON object with information about the user. The exact information
-    depends on whether the user is a Mentor or a Coder, and will include:
+\_returns profile information for a user based upon the username passed in the querystring.
+Does not expect any information in the body of the request, but does require an Authorization
+header with a Bearer token (which is a valid jwt Auth0 access token) having the appropriate
+permission (either a Coder or Mentor access token will carry the needed permission). Searches
+the Mentor & Coder database tables to see if the username exists and if not will return a 404
+error. If successful, returns a JSON object with information about the user. The exact information
+depends on whether the user is a Mentor or a Coder, and will include:
 
 for a Coder:
+
 "success": True
+
 "user_id": <<the Coder's ID from the Coder table in the postgresql database>>
+
 "usertype": "Coder"
+
 "mentor": <<the username (string) of the coder's mentor - if the coder does not have a
 mentor, this will be null>>
+
 "snippets": <<a list of snippets, with each snippet in JSON form - if the coder does not
 yet have any snippets, will be an empty list>>
 
 for a Mentor:
+
 "success": True
+
 "user_id": <<the Mentor's ID from the Mentor table in the postgresql database>>
 "usertype": "Mentor"
 "coders": << a list of coders (if any) belonging to this Mentor. Each coder in the list is
