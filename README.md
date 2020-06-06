@@ -68,78 +68,100 @@ Funcster-api is built using:
 
 The endpoints in the API are:
 
-'/' (GET)
+-   '/' (GET)
 
 _just returns a success message to let you know you are communicating with the
 funcster-api._
 
-'/signup' (POST)
+-   '/signup' (POST)
 
-\_runs through the signup process to register a new user with auth0 and with the
+_runs through the signup process to register a new user with auth0 and with the
 postgresql database. Expects data in the body of the request with the following
-information:
+information:_\
+_'usertype' {either 'coder' or 'mentor'}_\
+_'username'_\
+_'password'_\
+_'email'_
 
-'usertype' {either 'coder' or 'mentor'}
-
-'username'
-
-'password'
-
-'email'
-
-will check to see if there is already a conflicting username (in which case it will
+_will check to see if there is already a conflicting username (in which case it will
 return a 409 error), and then attempt to register the user with auth0 and if that
 succeeds, will register the user in the api's postgresql database as either a mentor
 or a coder, as applicable. If successful, returns a JSON object with "success": True
-and a "message" indicating that the signup was successful.\_
+and a "message" indicating that the signup was successful._
 
-'/userinfo/<username>' (GET)
+-   '/userinfo/<username>' (GET)
 
-\_returns profile information for a user based upon the username passed in the querystring.
+_returns profile information for a user based upon the username passed in the URL.
 Does not expect any information in the body of the request, but does require an Authorization
 header with a Bearer token (which is a valid jwt Auth0 access token) having the appropriate
 permission (either a Coder or Mentor access token will carry the needed permission). Searches
 the Mentor & Coder database tables to see if the username exists and if not will return a 404
 error. If successful, returns a JSON object with information about the user. The exact information
-depends on whether the user is a Mentor or a Coder, and will include:
+depends on whether the user is a Mentor or a Coder, and will include:_
 
-for a Coder:
+_for a Coder:_
 
-"success": True
+-   _"success": True_
+-   _"user_id": {the Coder's ID from the Coder table in the postgresql database}_
+-   _"usertype": "Coder"_
+-   _"mentor": {the username (string) of the coder's mentor - if the coder does not have a
+    mentor, this will be null}_
+-   _"snippets": {a list of snippets, with each snippet in JSON form - if the coder does not
+    yet have any snippets, will be an empty list}_
 
-"user_id": <<the Coder's ID from the Coder table in the postgresql database>>
+_for a Mentor:_
 
-"usertype": "Coder"
+-   _"success": True_
+-   _"user_id": {the Mentor's ID from the Mentor table in the postgresql database}_
+-   _"usertype": "Mentor"_
+-   _"coders": {a list of coders (if any) belonging to this Mentor. Each coder in the list is
+    provided as a JSON object with the coder's username, ID and a list of any snippets}_
 
-"mentor": <<the username (string) of the coder's mentor - if the coder does not have a
-mentor, this will be null>>
+-   '/coders' (GET)
 
-"snippets": <<a list of snippets, with each snippet in JSON form - if the coder does not
-yet have any snippets, will be an empty list>>
+_returns a list of all coders in the database. Does not expect any information in the body of the request, but does require an Authorization header with a Bearer token (which is a valid jwt Auth0 access token) having the proper permission (only a Mentor token has the proper permission for this endpoint). Returns a JSON object with a "success" key having a value of true, and a list of coders, each of which is a JSON object containing the information about each coder stored in the postgresql database (id, username, mentor_id, snippets)_
 
-for a Mentor:
+-   '/coders/available' (GET)
 
-"success": True
+_similar to '/coders' (see above), but provides list of only those coders who do not currently have a Mentor associated with them. Same Authorization header and permissions required as for the '/coders' endpoint._
 
-"user_id": <<the Mentor's ID from the Mentor table in the postgresql database>>
-"usertype": "Mentor"
-"coders": << a list of coders (if any) belonging to this Mentor. Each coder in the list is
-provided as a JSON object with the coder's username, ID and a list of any snippets>>\*
+-   '/coder/<coder_id>/mentor' (PATCH)
 
-'/coders' (GET)
+_this endpoint allows a Coder to select a Mentor. It requires an Authorization header with a valid Auth0 jwt 'Coder' access token. The coder's id is to be included in
+the URL of the request, and this expects a body with
+a 'mentorId' consisting of the selected mentor's ID from the
+Mentor table of the postgresql database. If successfule,
+returns a JSON object with 'success' equal to true, and a message verifying that the mentor was successfully added._
 
--   returns a list of all coders in the database. Does not expect any information in the body of the
-    request, but does require an Authorization header with a Bearer token (which is a valid jwt Auth0
-    access token) having the proper permission (only a Mentor token has the proper permission for this
-    endpoint). Returns a JSON object with a "success" key having a value of true, and a list of coders,
-    each of which is a JSON object containing the information about each coder stored in the postgresql
-    database (id, username, mentor_id, snippets)\*
+-   '/mentors' (GET)
 
-'/coders/available' (GET)
+_this endpoint returns a list of mentors, with each mentor represented as a JSON object containing the mentor's information from the Mentor table of the postgresql database (id, username, coders (which is a list of coder JSONs)). This endpoint requires an Authorization header consisting of a valid 'Mentor' jwt Auth0 access token._
 
--   similar to '/coders' (see above), but provides list of only those coders who do not currently have
-    a Mentor associated with them. Same Authorization header and permissions required as for the
-    '/coders' endpoint.\*
+-   '/mentor/<mentor_id>/coder' (PATCH)
+
+_this endpoint allows a Mentor to add a specified Coder to
+the Mentor's list of Coders. The Mentor's id is included in the URL of the request, and the body should include a 'coderId' which is the selected Coder's id from the Coder table of the postgresql database. This endpoint requires an Authorization header with a Bearer token consisting of a valid 'Mentor' jwt Auth0 access token._
+
+-   '/snippet/<snippet_id>' (GET)
+
+_this endpoint returns a requested code snippet from the database based on the snippet's id in the postgresql database which is provided in the URL. This request requires an Authorization header with a Bearer token consisting of a valid Auth0 jwt access token (may be either a Coder or a Mentor token)._
+
+-   '/snippet' (POST)
+
+_this endpoint is used to post a new code Snippet to the database. It requires an Authorization header with a Bearer token consisting of a valid 'Coder' Auth0 jwt access token. The Snippet information should be provided in the body of the post request, and should include:_\
+
+-   _'name': {name for the snippet}_\
+-   _'code': {the actual code of the snippet as a string}_\
+-   _'needsReview': {a boolean indicating whether the code need to be reviewed by the applicable Mentor}_\
+-   _'comments': {optional, probably a blank string for initial post (comments are intended to be added later by a Mentor)}_
+
+*   '/snippet/<snippet_id>' (PATCH)
+
+_this endpoint is used to update an existing snippet (after being edited or reviewed by the Coder or by a Mentor). The Snippet's id is provided in the URL and the request must include an Authorization header consisting of a Bearer token which may be either a 'Coder' or 'Mentor' Auth0 jwt access token. The body of the request can include the same parameters as the POST method for a new snippet (see above). **NOTE that if a parameter is not provided, this will change the attribute to a blank string, null or False in the database (basically erasing the existing value), so please provide the original value for each attribute if not intending to change the existing value.**_
+
+-   '/snippet/<snippet_id>' (DELETE)
+
+_this endpoint allows a coder to delete an existing Snippet (identified by the Snippet's id provided in the URL). This request must include an Authorization header consisting of a Bearer token which is a valid 'Coder' Auth0 jwt access token. This enpoint expects a 'coderId' to be provided in the body of the request, which id must match the id of the Coder associated with the Snippet in the postgresql database._
 
 ### Main Files: Project Structure
 
