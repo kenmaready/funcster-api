@@ -31,7 +31,7 @@ Also, for purposes of this review, I've published the .env file in the repositor
 
 After downloading/cloning the projects, you should run `pip install -r requirements.txt` to be sure that you have the required dependencies available in your environment.
 
-You will also need to set some environment variables in order to get the app to work. You can do so manually in your CLI using 'export' (or 'set' on Windows machines) for each of the variables, or you can create a file named '.env' in the root folder for this project and define the variables in that file. If you use the second menthod, in order to have flask automatically pick up the variables in your .env file, you will need to have `dotenv` installed locally to use the .env file, so if you do not have it, run `pip install python-dotenv` from your command line to install it. After installing dotenv, Flask will automatically run the .env file each time you use `flask run`.
+You will also need to set some environment variables in order to get the app to work. You can do so manually in your CLI using 'export' (or 'set' on Windows machines) for each of the variables, or you can create a file named '.env' in the root folder for this project and define the variables in that file. If you use the second menthod, in order to have flask automatically pick up the variables in your .env file, you will need to have `dotenv` installed locally, so if you do not have it, run `pip install python-dotenv` from your command line to install it. After installing dotenv, Flask will automatically run the .env file each time you use `flask run`.
 
 The environment variables you will need to set are:
 
@@ -53,7 +53,7 @@ AUTH0_CODER_TOKEN={a valid JWT access token provided for a Coder registered on t
 AUTH0_MENTOR_TOKEN={ valid JWT access token provided for a Mentor registered on the application (only needed for test_app.py)}
 ```
 
-Once requirements have been installed and environment variables defined, run the app by running `run flask` in the root folder. If run locally, the api will be served on [http://localhost:5000](http://localhost:5000). The endpoints are all defined and described in the app.py file. Many of the endpoints are restricted and require authentification with a working jwt access token from auth0. In some cases, the endpoints require certain permissions which are provided in the token.
+Once requirements have been installed and environment variables defined, run the app by running `flask run` in the root folder. If run locally, the api will be served on [http://localhost:5000](http://localhost:5000). The endpoints are all defined and described in the app.py file. Many of the endpoints are restricted and require authentification with a working jwt access token from auth0. In some cases, the endpoints require certain permissions which are provided in the token.
 
 ### Technologies
 
