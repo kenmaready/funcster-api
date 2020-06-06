@@ -39,8 +39,8 @@ The environment variables you will need to set are:
 FLASK_APP=app.py
 FLASK_DEBUG=True
 FLASK_ENV=development
-DATABASE_URL= {path to your local postgres database for this app, including any needed password}
-TEST_DATABASE_URL={this is only needed to run test_app.py; it is the path to your local postgres testing database, which should be separate from your regular database}
+DATABASE_URL={path to your local postgres database for this app, including any needed password}
+TEST_DATABASE_URL={ path to your local postgres testing database, which should be separate from your regular database (only needed for test_app.py)}
 
 AUTH0_DOMAIN=funcster.auth0.com
 API_AUDIENCE=funcster-auth0-api
@@ -49,8 +49,8 @@ AUTH0_CLIENT_ID={the auth0 client ID for your funcster application on auth0}
 AUTH0_CONNECTION={the name of the auth0 database you will use to store user information. If you go with the default provided by auth0, it will be 'Username-Password-Authentication'}
 API_IDENTIFIER={the auth0 identifier for the auth0 API you'll be using to get user info}
 
-AUTH0_CODER_TOKEN={a valid JWT access token provided for a Coder registered on the application}
-AUTH0_MENTOR_TOKEN={ valid JWT access token provided for a Mentor registered on the application}
+AUTH0_CODER_TOKEN={a valid JWT access token provided for a Coder registered on the application (only needed for test_app.py)}
+AUTH0_MENTOR_TOKEN={ valid JWT access token provided for a Mentor registered on the application (only needed for test_app.py)}
 ```
 
 Once requirements have been installed and environment variables defined, run the app by running `run flask` in the root folder. If run locally, the api will be served on [http://localhost:5000](http://localhost:5000). The endpoints are all defined and described in the app.py file. Many of the endpoints are restricted and require authentification with a working jwt access token from auth0. In some cases, the endpoints require certain permissions which are provided in the token.
@@ -63,6 +63,31 @@ Funcster-api is built using:
 -   **PostgreSQL** as our database
 -   **Python3** and **Flask** as our server language and server framework
 -   **Flask-Migrate** for creating and running schema migrations
+
+### Using the API: Endpoints
+
+The endpoints in the API are:
+
+```sh
+'/' (GET)
+just returns a success message to let you know you are communicating with the
+funcster-api
+
+'/signup' (POST)
+runs through the signup process to register a new user with auth0 and with the
+postgresql database.  Expects data in the body of the request with the following
+information:
+    'usertype' {either 'coder' or 'mentor'}
+    'username'
+    'password'
+    'email'
+will check to see if there is already a conflicting username (in which case it will
+return a 409 error), and then attempt to register the user with auth0 and if that
+succeeds, will register the user in the api's postgresql database as either a mentor
+or a coder, as applicable.  If successful, returns a JSON object with "success": True
+and a "message" indicating that the signup was successful.
+
+```
 
 ### Main Files: Project Structure
 
