@@ -1,149 +1,91 @@
-funcster-api
------
+# </> funcster-api
 
-### Introduction
+![funcster logo](logo.png)
 
-funcster-api is the back end of a capstone project for the Udacity Full-Stack Developer Nanodegree.  The repository for the front end of the project is {here}[https://github.com/kenmaready/funcster].
+## Introduction
+
+Funcster-api is the back end of a capstone project for the Udacity Full-Stack Developer Nanodegree. The repository for the front end of the project is [here](https://github.com/kenmaready/funcster).
 
 funcster is a simple app allowing 'Coders' to post, store and edit snippets of python code in their own snippet library, and their 'Mentors' to view, revise and comment on that code.
 
-The project rubric requires using auth0 to handle authentication and role-based authorization controls, a postgresql database to store data and deployment to heroku.  Because of this there is often an issue with making sure the databases in the auth0 tenant, the local testing environment and the heroku production environment are in sync, since signing up a new user may result in a conflict (409) error and different snippets may be assigned to different coders depending on whether you are in the testing (local) environment or the production (heroku) environment
+The project utilizes auth0 for authentication and some authorization, and postgresql as a database for the back end. The back end is built in python, using the flask framework with flask-sqlalchemy as an ORM to manage and connect with the database.
 
-### Note: Populating the Database with Starter/Mock Data
+The project is currently deployed on heroku:
 
-Once the database is set up and fully migrated to current version,  you can run "python ./bin/configure_db.py" in the main fyyur folder in order to populate the database with some initial data to play around with.  This includes the initial bands, venues and shows that were in the mock data provided with the starter file, but as data living in the database.  WARNING: running configure_db.py will erase all existing data in the database.
+-   front end: [funcster.herokuapp.com](https://funcster.herokuapp.com/)
+-   back end/api: [funcster-api.herokuapp.com](https://funcster-api.herokuapp.com/)
 
-### Overview
+## Overview
 
-This app is nearly complete. It is only missing one thing… real data! While the views and controllers are defined in this application, it is missing models and model interactions to be able to store retrieve, and update data from a database. By the end of this project, you should have a fully functioning site that is at least capable of doing the following, if not more, using a PostgreSQL database:
+The application has two types of users: 'Mentors' and 'Coders'. Coders can write and save code snippets (python functions and classes), select a mentor and ask their mentor to review their code. Mentors can select coders and review code posted by their coders who have asked for review. When reviewing, Mentors can edit the code and can also leave notes for their coders.
 
-* creating new venues, artists, and creating new shows.
-* searching for venues and artists.
-* learning more about a specific artist or venue.
+Each Coder can only have one Mentor, but each Mentor can have many Coders. Each Coder can have many Snippets, but each Snippet belongs to one Coder.
 
-We want Fyyur to be the next new platform that artists and musical venues can use to find each other, and discover new music shows. Let's make that happen!
+### Udacity Reviewer Testing
 
-### Tech Stack
+For ease of reviewing, on the deployed app at heroku, I've created three Coder users (coder1, coder2 and coder3) and three Mentor users (mentor1, mentor2 and mentor3) which are already registered on auth0, each having the simple password '123456'. I've also left a console.log() of their access tokens within the deployed application, so if the tokens I provide you have expired or don't work when you try to review my app, you can go to the deployed front end at [funcster.herokuapp.com](https://funcster.herokuapp.com/), log in with a user and use chrome development tools to view the console and get a newly-generated valid access token. For example, you could log in with coder1 to get a "Coder" access token, and mentor1 to get a "Mentor" access token. Access tokens should remain valid for 24 hours.  
 
-Our tech stack will include:
+Also, for purposes of this review, I've published the .env file in the repository, so you will not need to set all the environment variables described below, they will be set for you if you have dotenv installed on your machine.  There is a valid 'Coder' access token and a valid 'Mentor' access token in the .env file which you can use for testing.
 
-* **SQLAlchemy ORM** to be our ORM library of choice
-* **PostgreSQL** as our database of choice
-* **Python3** and **Flask** as our server language and server framework
-* **Flask-Migrate** for creating and running schema migrations
-* **HTML**, **CSS**, and **Javascript** with [Bootstrap 3](https://getbootstrap.com/docs/3.4/customize/) for our website's frontend
+
+### Getting Started
+
+After downloading/cloning the projects, you should run `pip install -r requirements.txt` to be sure that you have the required dependencies available in your environment.
+
+You will also need to set some environment variables in order to get the app to work. You can do so manually in your CLI using 'export' (or 'set' on Windows machines) for each of the variables, or you can create a file named '.env' in the root folder for this project and define the variables in that file. If you use the second menthod, in order to have flask automatically pick up the variables in your .env file, you will need to have `dotenv` installed locally to use the .env file, so if you do not have it, run `pip install python-dotenv` from your command line to install it. After installing dotenv, Flask will automatically run the .env file each time you use `flask run`.
+
+The environment variables you will need to set are:
+
+```
+FLASK_APP=app.py
+FLASK_DEBUG=True
+FLASK_ENV=development
+DATABASE_URL= {path to your local postgres database for this app, including any needed password}
+TEST_DATABASE_URL={this is only needed to run test_app.py; it is the path to your local postgres testing database, which should be separate from your regular database}
+
+AUTH0_DOMAIN=funcster.auth0.com
+API_AUDIENCE=funcster-auth0-api
+
+AUTH0_CLIENT_ID={the auth0 client ID for your funcster application on auth0}
+AUTH0_CONNECTION={the name of the auth0 database you will use to store user information. If you go with the default provided by auth0, it will be 'Username-Password-Authentication'}
+API_IDENTIFIER={the auth0 identifier for the auth0 API you'll be using to get user info}
+
+AUTH0_CODER_TOKEN={a valid JWT access token provided for a Coder registered on the application}
+AUTH0_MENTOR_TOKEN={ valid JWT access token provided for a Mentor registered on the application}
+```
+
+Once requirements have been installed and environment variables defined, run the app by running `run flask` in the root folder.  If run locally, the api will be served on [http://localhost:5000](http://localhost:5000).  The endpoints are all defined and described in the app.py file.  Many of the endpoints are restricted and require authentification with a working jwt access token from auth0.  In some cases, the endpoints require certain permissions which are provided in the token.
+
+### Technologies
+
+Funcster-api is built using:
+
+-   **SQLAlchemy ORM** as our ORM layer
+-   **PostgreSQL** as our database
+-   **Python3** and **Flask** as our server language and server framework
+-   **Flask-Migrate** for creating and running schema migrations
 
 ### Main Files: Project Structure
 
-  ```sh
-  ├── README.md
-  ├── app.py *** the main driver of the app. Includes your SQLAlchemy models.
-                    "python app.py" to run after installing dependences
-  ├── config.py *** Database URLs, CSRF generation, etc
-  ├── error.log
-  ├── forms.py *** Your forms
-  ├── requirements.txt *** The dependencies we need to install with "pip3 install -r requirements.txt"
-  ├── static
-  │   ├── css 
-  │   ├── font
-  │   ├── ico
-  │   ├── img
-  │   └── js
-  └── templates
-      ├── errors
-      ├── forms
-      ├── layouts
-      └── pages
-  ```
-
-Overall:
-* Models are located in the `MODELS` section of `app.py`.
-* Controllers are also located in `app.py`.
-* The web frontend is located in `templates/`, which builds static assets deployed to the web server at `static/`.
-* Web forms for creating data are located in `form.py`
-
-
-Highlight folders:
-* `templates/pages` -- (Already complete.) Defines the pages that are rendered to the site. These templates render views based on data passed into the template’s view, in the controllers defined in `app.py`. These pages successfully represent the data to the user, and are already defined for you.
-* `templates/layouts` -- (Already complete.) Defines the layout that a page can be contained in to define footer and header code for a given page.
-* `templates/forms` -- (Already complete.) Defines the forms used to create new artists, shows, and venues.
-* `app.py` -- (Missing functionality.) Defines routes that match the user’s URL, and controllers which handle data and renders views to the user. This is the main file you will be working on to connect to and manipulate the database and render views with data to the user, based on the URL.
-* Models in `app.py` -- (Missing functionality.) Defines the data models that set up the database tables.
-* `config.py` -- (Missing functionality.) Stores configuration variables and instructions, separate from the main application code. This is where you will need to connect to the database.
-
-
-Instructions
------
-
-1. Understand the Project Structure (explained above) and where important files are located.
-2. Build and run local development following the Development Setup steps below.
-3. Fill in the missing functionality in this application: this application currently pulls in fake data, and needs to now connect to a real database and talk to a real backend.
-3. Fill out every `TODO` section throughout the codebase. We suggest going in order of the following:
-
-  1. Connect to a database in `config.py`. A project submission that uses a local database connection is fine.
-  2. Using SQLAlchemy, set up normalized models for the objects we support in our web app in the Models section of `app.py`. Check out the sample pages provided at /artists/1, /venues/1, and /shows/1 for examples of the data we want to model, using all of the learned best practices in database schema design. Implement missing model properties and relationships using database migrations via Flask-Migrate.
-  3. Implement form submissions for creating new Venues, Artists, and Shows. There should be proper constraints, powering the `/create` endpoints that serve the create form templates, to avoid duplicate or nonsensical form submissions. Submitting a form should create proper new records in the database.
-  4. Implement the controllers for listing venues, artists, and shows. Note the structure of the mock data used. We want to keep the structure of the mock data.
-  5. Implement search, powering the `/search` endpoints that serve the application's search functionalities.
-  6. Serve venue and artist detail pages, powering the `<venue|artist>/<id>` endpoints that power the detail pages.
-
-
-Acceptance Criteria
------
-
-1. The web app should be successfully connected to a PostgreSQL database. A local connection to a database on your local computer is fine.
-2. There should be no use of mock data throughout the app. The data structure of the mock data per controller should be kept unmodified when satisfied by real data.
-3. The application should behave just as before with mock data, but now uses real data from a real backend server, with real search functionality. For example:
-  * when a user submits a new artist record, the user should be able to see it populate in /artists, as well as search for the artist by name and have the search return results.
-  * I should be able to go to the URL `/artist/<artist-id>` to visit a particular artist’s page using a unique ID per artist, and see real data about that particular artist.
-  * Venues should continue to be displayed in groups by city and state.
-  * Search should be allowed to be partial string matching and case-insensitive.
-  * Past shows versus Upcoming shows should be distinguished in Venue and Artist pages.
-  * A user should be able to click on the venue for an upcoming show in the Artist's page, and on that Venue's page, see the same show in the Venue Page's upcoming shows section.
-4. As a fellow developer on this application, I should be able to run `flask db migrate`, and have my local database (once set up and created) be populated with the right tables to run this application and have it interact with my local postgres server, serving the application's needs completely with real data I can seed my local database with.
-  * The models should be completed (see TODOs in the `Models` section of `app.py`) and model the objects used throughout Fyyur.
-  * The right _type_ of relationship and parent-child dynamics between models should be accurately identified and fit the needs of this particular application.
-  * The relationship between the models should be accurately configured, and referential integrity amongst the models should be preserved.
-  * `flask db migrate` should work, and populate my local postgres database with properly configured tables for this application's objects, including proper columns, column data types, constraints, defaults, and relationships that completely satisfy the needs of this application. The proper type of relationship between venues, artists, and shows should be configured.
-
-##### Stand Out
-
-Looking to go above and beyond? This is the right section for you! Here are some challenges to make your submission stand out:
-
-*  Implement artist availability. An artist can list available times that they can be booked. Restrict venues from being able to create shows with artists during a show time that is outside of their availability.
-* Show Recent Listed Artists and Recently Listed Venues on the homepage, returning results for Artists and Venues sorting by newly created. Limit to the 10 most recently listed items.
-* Implement Search Artists by City and State, and Search Venues by City and State. Searching by "San Francisco, CA" should return all artists or venues in San Francisco, CA.
-
-Best of luck in your final project! Fyyur depends on you!
-
-### Development Setup
-
-First, [install Flask](http://flask.pocoo.org/docs/1.0/installation/#install-flask) if you haven't already.
-
-  ```
-  $ cd ~
-  $ sudo pip3 install Flask
-  ```
-
-To start and run the local development server,
-
-1. Initialize and activate a virtualenv:
-  ```
-  $ cd YOUR_PROJECT_DIRECTORY_PATH/
-  $ virtualenv --no-site-packages env
-  $ source env/bin/activate
-  ```
-
-2. Install the dependencies:
-  ```
-  $ pip install -r requirements.txt
-  ```
-
-3. Run the development server:
-  ```
-  $ export FLASK_APP=myapp
-  $ export FLASK_ENV=development # enables debug mode
-  $ python3 app.py
-  ```
+```sh
+├── app.py *** the main driver of the app. Includes your routes (controllers).
+                  "flask run" to run after installing dependences and setting environment
+                  variables
+├── auth.py *** helper functions relating to authenticating auth0 access tokens, and
+                checking permissions from request headers
+├── funcsterdb_test.psql *** a psql 'dump' from a test database with mock data; can be used
+                             to set up a database with users and code for testing purposes
+├── manage.py *** sets up flask-migrate to run database migrations
+├── models.py *** the models to be used to set up tables/schema in the database, along with some
+                  helpful methods to interact with those tables from the application
+├── Profile *** utility file needed for deployment to heroku
+├── README.md
+├── requirements.txt *** The dependencies we need to install with "pip install -r requirements.txt"
+├── test_app.py *** a suite of test functions utilizing python unit_test; this also utilizes dotenv
+                    to load environment variables necessary for testing. A postgresql testing database
+                    will need to be created to provide a database for testing that will not interfere
+                    with any actual data in your app (testing will empty and recreate the database each
+                    time it is run)
+```
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
