@@ -23,10 +23,9 @@ Each Coder can only have one Mentor, but each Mentor can have many Coders. Each 
 
 ### Udacity Reviewer Testing
 
-For ease of reviewing, on the deployed app at heroku, I've created three Coder users (coder1, coder2 and coder3) and three Mentor users (mentor1, mentor2 and mentor3) which are already registered on auth0, each having the simple password '123456'. I've also left a console.log() of their access tokens within the deployed application, so if the tokens I provide you have expired or don't work when you try to review my app, you can go to the deployed front end at [funcster.herokuapp.com](https://funcster.herokuapp.com/), log in with a user and use chrome development tools to view the console and get a newly-generated valid access token. For example, you could log in with coder1 to get a "Coder" access token, and mentor1 to get a "Mentor" access token. Access tokens should remain valid for 24 hours.  
+For ease of reviewing, on the deployed app at heroku, I've created three Coder users (coder1, coder2 and coder3) and three Mentor users (mentor1, mentor2 and mentor3) which are already registered on auth0, each having the simple password '123456'. I've also left a console.log() of their access tokens within the deployed application, so if the tokens I provide you have expired or don't work when you try to review my app, you can go to the deployed front end at [funcster.herokuapp.com](https://funcster.herokuapp.com/), log in with a user and use chrome development tools to view the console and get a newly-generated valid access token. For example, you could log in with coder1 to get a "Coder" access token, and mentor1 to get a "Mentor" access token. Access tokens should remain valid for 24 hours.
 
-Also, for purposes of this review, I've published the .env file in the repository, so you will not need to set all the environment variables described below, they will be set for you if you have dotenv installed on your machine.  There is a valid 'Coder' access token and a valid 'Mentor' access token in the .env file which you can use for testing.
-
+Also, for purposes of this review, I've published the .env file in the repository, so you will not need to set all the environment variables described below, they will be set for you if you have dotenv installed on your machine. There is a valid 'Coder' access token and a valid 'Mentor' access token in the .env file which you can use for testing.
 
 ### Getting Started
 
@@ -54,7 +53,7 @@ AUTH0_CODER_TOKEN={a valid JWT access token provided for a Coder registered on t
 AUTH0_MENTOR_TOKEN={ valid JWT access token provided for a Mentor registered on the application}
 ```
 
-Once requirements have been installed and environment variables defined, run the app by running `run flask` in the root folder.  If run locally, the api will be served on [http://localhost:5000](http://localhost:5000).  The endpoints are all defined and described in the app.py file.  Many of the endpoints are restricted and require authentification with a working jwt access token from auth0.  In some cases, the endpoints require certain permissions which are provided in the token.
+Once requirements have been installed and environment variables defined, run the app by running `run flask` in the root folder. If run locally, the api will be served on [http://localhost:5000](http://localhost:5000). The endpoints are all defined and described in the app.py file. Many of the endpoints are restricted and require authentification with a working jwt access token from auth0. In some cases, the endpoints require certain permissions which are provided in the token.
 
 ### Technologies
 
@@ -87,5 +86,3 @@ Funcster-api is built using:
                     with any actual data in your app (testing will empty and recreate the database each
                     time it is run)
 ```
-
-4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
