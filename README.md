@@ -89,7 +89,7 @@ succeeds, will register the user in the api's postgresql database as either a me
 or a coder, as applicable. If successful, returns a JSON object with "success": True
 and a "message" indicating that the signup was successful._
 
--   '/userinfo/<username>' (GET)
+-   '/userinfo/\<username>' (GET)
 
 _returns profile information for a user based upon the username passed in the URL.
 Does not expect any information in the body of the request, but does require an Authorization
