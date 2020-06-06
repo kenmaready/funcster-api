@@ -176,7 +176,7 @@ _this endpoint allows a coder to delete an existing Snippet (identified by the S
 ├── manage.py *** sets up flask-migrate to run database migrations
 ├── models.py *** the models to be used to set up tables/schema in the database, along with some
                   helpful methods to interact with those tables from the application
-├── Profile *** utility file needed for deployment to heroku
+├── Procfile *** utility file needed for deployment to heroku
 ├── README.md
 ├── requirements.txt *** The dependencies we need to install with "pip install -r requirements.txt"
 ├── test_app.py *** a suite of test functions utilizing python unit_test; this also utilizes dotenv
