@@ -70,11 +70,11 @@ The endpoints in the API are:
 
 ```sh
 '/' (GET)
-just returns a success message to let you know you are communicating with the
-funcster-api
+*just returns a success message to let you know you are communicating with the
+funcster-api.*
 
 '/signup' (POST)
-runs through the signup process to register a new user with auth0 and with the
+*runs through the signup process to register a new user with auth0 and with the
 postgresql database.  Expects data in the body of the request with the following
 information:
     'usertype' {either 'coder' or 'mentor'}
@@ -85,7 +85,46 @@ will check to see if there is already a conflicting username (in which case it w
 return a 409 error), and then attempt to register the user with auth0 and if that
 succeeds, will register the user in the api's postgresql database as either a mentor
 or a coder, as applicable.  If successful, returns a JSON object with "success": True
-and a "message" indicating that the signup was successful.
+and a "message" indicating that the signup was successful.*
+
+'/userinfo/<username>' (GET)
+* returns profile information for a user based upon the username passed in the querystring.
+Does not expect any information in the body of the request, but does require an Authorization
+header with a Bearer token (which is a valid jwt Auth0 access token) having the appropriate
+permission (either a Coder or Mentor access token will carry the needed permission).  Searches
+the Mentor & Coder database tables to see if the username exists and if not will return a 404
+error. If successful, returns a JSON object with information about the user. The exact information
+depends on whether the user is a Mentor or a Coder, and will include:
+
+for a Coder:
+    "success": True
+    "user_id": <<the Coder's ID from the Coder table in the postgresql database>>
+    "usertype": "Coder"
+    "mentor": <<the username (string) of the coder's mentor - if the coder does not have a
+                mentor, this will be null>>
+    "snippets": <<a list of snippets, with each snippet in JSON form - if the coder does not
+                yet have any snippets, will be an empty list>>
+
+for a Mentor:
+    "success": True
+    "user_id": <<the Mentor's ID from the Mentor table in the postgresql database>>
+    "usertype": "Mentor"
+    "coders": << a list of coders (if any) belonging to this Mentor.  Each coder in the list is
+                 provided as a JSON object with the coder's username, ID and a list of any snippets>>*
+
+'/coders' (GET)
+* returns a list of all coders in the database.  Does not expect any information in the body of the
+request, but does require an Authorization header with a Bearer token (which is a valid jwt Auth0
+access token) having the proper permission (only a Mentor token has the proper permission for this
+endpoint).  Returns a JSON object with a "success" key having a value of true, and a list of coders,
+each of which is a JSON object containing the information about each coder stored in the postgresql
+database (id, username, mentor_id, snippets)*
+
+'/coders/available' (GET)
+* similar to '/coders' (see above), but provides list of only those coders who do not currently have
+a Mentor associated with them.  Same Authorization header and permissions required as for the
+'/coders' endpoint.*
+
 
 ```
 
