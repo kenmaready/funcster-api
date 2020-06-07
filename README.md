@@ -21,12 +21,6 @@ The application has two types of users: 'Mentors' and 'Coders'. Coders can write
 
 Each Coder can only have one Mentor, but each Mentor can have many Coders. Each Coder can have many Snippets, but each Snippet belongs to one Coder.
 
-### Udacity Reviewer Testing
-
-For ease of reviewing, on the deployed app at heroku, I've created three Coder users (coder1, coder2 and coder3) and three Mentor users (mentor1, mentor2 and mentor3) which are already registered on auth0, each having the simple password '123456'. I've also left a console.log() of their access tokens within the deployed application, so if the tokens I provide you have expired or don't work when you try to review my app, you can go to the deployed front end at [funcster.herokuapp.com](https://funcster.herokuapp.com/), log in with a user and use chrome development tools to view the console and get a newly-generated valid access token. For example, you could log in with coder1 to get a "Coder" access token, and mentor1 to get a "Mentor" access token. Access tokens should remain valid for 24 hours.
-
-Also, for purposes of this review, I've published the .env file in the repository, so you will not need to set all the environment variables described below, they will be set for you if you have dotenv installed on your machine. There is a valid 'Coder' access token and a valid 'Mentor' access token in the .env file which you can use for testing.
-
 ### Getting Started
 
 After downloading/cloning the projects, you should run `pip install -r requirements.txt` to be sure that you have the required dependencies available in your environment.
@@ -53,7 +47,7 @@ AUTH0_CODER_TOKEN={a valid JWT access token provided for a Coder registered on t
 AUTH0_MENTOR_TOKEN={ valid JWT access token provided for a Mentor registered on the application (only needed for test_app.py)}
 ```
 
-Once requirements have been installed and environment variables defined, run the app by running `run flask` in the root folder. If run locally, the api will be served on [http://localhost:5000](http://localhost:5000). The endpoints are all defined and described in the app.py file. Many of the endpoints are restricted and require authentification with a working jwt access token from auth0. In some cases, the endpoints require certain permissions which are provided in the token.
+Once requirements have been installed and environment variables defined, run the app by running `flask run` in the root folder. If run locally, the api will be served on [http://localhost:5000](http://localhost:5000). The endpoints are all defined and described in the app.py file. Many of the endpoints are restricted and require authentification with a working jwt access token from auth0. In some cases, the endpoints require certain permissions which are provided in the token.
 
 ### Technologies
 
@@ -176,10 +170,10 @@ _this endpoint allows a coder to delete an existing Snippet (identified by the S
 ├── manage.py *** sets up flask-migrate to run database migrations
 ├── models.py *** the models to be used to set up tables/schema in the database, along with some
                   helpful methods to interact with those tables from the application
-├── Profile *** utility file needed for deployment to heroku
+├── Procfile *** utility file needed for deployment to heroku
 ├── README.md
 ├── requirements.txt *** The dependencies we need to install with "pip install -r requirements.txt"
-├── test_app.py *** a suite of test functions utilizing python unit_test; this also utilizes dotenv
+└── test_app.py *** a suite of test functions utilizing python unit_test; this also utilizes dotenv
                     to load environment variables necessary for testing. A postgresql testing database
                     will need to be created to provide a database for testing that will not interfere
                     with any actual data in your app (testing will empty and recreate the database each
