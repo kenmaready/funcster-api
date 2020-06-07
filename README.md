@@ -25,7 +25,7 @@ Each Coder can only have one Mentor, but each Mentor can have many Coders. Each 
 
 After downloading/cloning the projects, you should run `pip install -r requirements.txt` to be sure that you have the required dependencies available in your environment.
 
-You will also need to set some environment variables in order to get the app to work. You can do so manually in your CLI using 'export' (or 'set' on Windows machines) for each of the variables, or you can create a file named '.env' in the root folder for this project and define the variables in that file. If you use the second menthod, in order to have flask automatically pick up the variables in your .env file, you will need to have `dotenv` installed locally to use the .env file, so if you do not have it, run `pip install python-dotenv` from your command line to install it. After installing dotenv, Flask will automatically run the .env file each time you use `flask run`.
+You will also need to set some environment variables in order to get the app to work. You can do so manually in your CLI using 'export' (or 'set' on Windows machines) for each of the variables, or you can create a file named '.env' in the root folder for this project and define the variables in that file. If you use the second menthod, in order to have flask automatically pick up the variables in your .env file, you will need to have `dotenv` installed locally, so if you do not have it, run `pip install python-dotenv` from your command line to install it. After installing dotenv, Flask will automatically run the .env file each time you use `flask run`.
 
 The environment variables you will need to set are:
 
@@ -83,7 +83,7 @@ succeeds, will register the user in the api's postgresql database as either a me
 or a coder, as applicable. If successful, returns a JSON object with "success": True
 and a "message" indicating that the signup was successful._
 
--   '/userinfo/<username>' (GET)
+-   '/userinfo/\<username>' (GET)
 
 _returns profile information for a user based upon the username passed in the URL.
 Does not expect any information in the body of the request, but does require an Authorization
